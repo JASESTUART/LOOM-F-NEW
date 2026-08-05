@@ -24,7 +24,7 @@ window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
 // ============ Reveal-on-scroll for sections ============
-const revealEls = document.querySelectorAll('.section, .hero');
+const revealEls = document.querySelectorAll('.section:not(.video-testimonials), .hero');
 const io = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -38,7 +38,7 @@ revealEls.forEach(el => io.observe(el));
 // inject reveal styles once
 const style = document.createElement('style');
 style.textContent = `
-  .section, .hero { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .section:not(.video-testimonials), .hero { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
   .section.in-view, .hero.in-view { opacity: 1; transform: none; }
 `;
 document.head.appendChild(style);
