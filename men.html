@@ -1264,6 +1264,28 @@
       });
     })();
   </script>
+  <script>
+    /* Report full page height to a parent frame so the embedding iframe can
+       auto-size to the content. This lets the OUTER page scroll normally and
+       avoids the iOS Safari bug where tall content inside a position:fixed
+       iframe stops painting/scrolling (blank area) past a certain depth. */
+    (function () {
+      if (window.parent === window) return; // not embedded — do nothing
+      var last = 0;
+      function postHeight() {
+        var h = Math.max(
+          document.body.scrollHeight, document.documentElement.scrollHeight,
+          document.body.offsetHeight, document.documentElement.offsetHeight
+        );
+        if (h !== last) { last = h; window.parent.postMessage({ bbaFrameHeight: h }, '*'); }
+      }
+      window.addEventListener('load', postHeight);
+      window.addEventListener('resize', postHeight);
+      if (window.ResizeObserver) { try { new ResizeObserver(postHeight).observe(document.body); } catch (e) {} }
+      document.addEventListener('DOMContentLoaded', postHeight);
+      setInterval(postHeight, 1000); // catch late-loading media (videos/iframes)
+    })();
+  </script>
 </body>
 
 </html>
