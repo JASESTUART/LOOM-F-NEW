@@ -1233,6 +1233,29 @@
       window.addEventListener('touchend', function () { if (!scrubbing) return; scrubbing = false; commitSeek(); });
     })();
   </script>
+  <script>
+    // Report this page's height to a parent frame so the embed can auto-resize
+    (function () {
+      if (window.parent === window) return; // not embedded
+      var last = 0;
+      function postHeight() {
+        var h = Math.max(
+          document.body ? document.body.scrollHeight : 0,
+          document.documentElement.scrollHeight,
+          document.body ? document.body.offsetHeight : 0,
+          document.documentElement.offsetHeight
+        );
+        if (h && h !== last) { last = h; window.parent.postMessage({ bbaFrameHeight: h }, '*'); }
+      }
+      window.addEventListener('load', postHeight);
+      window.addEventListener('resize', postHeight);
+      document.addEventListener('DOMContentLoaded', postHeight);
+      if (window.ResizeObserver) { try { new ResizeObserver(postHeight).observe(document.documentElement); } catch (e) {} }
+      // Late-loading content (video, images, embeds) can grow the page after load
+      [200, 600, 1200, 2500, 4000].forEach(function (t) { setTimeout(postHeight, t); });
+      window.addEventListener('message', function (e) { if (e.data === 'bbaRequestHeight') postHeight(); });
+    })();
+  </script>
   <script src="men.js"></script>
   <script>
     (function () {
